@@ -91,7 +91,7 @@ export default ({ allMarkdownPosts }) => {
 
 ## Usage With Nuxt.js
 
-[TODO]
+We're waiting for Nuxt's full-static mode, it's already possible to use Mordred with Nuxt's `asyncData` though. We'll document this soon.
 
 ## License
 
