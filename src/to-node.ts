@@ -10,6 +10,8 @@ export const getFileNodeId = (filename: string) => {
 
 export type Node = {
   id: string
+  type: string
+  title?: string
   date: Date
   updated: Date
   content: string
@@ -20,7 +22,7 @@ export type Node = {
   }
 }
 
-export async function fileToNode(filename: string, cwd: string) {
+export async function fileToNode(filename: string, cwd: string): Promise<Node> {
   const absolutePath = join(cwd, filename)
   const fileContent = await readFile(absolutePath, 'utf8')
   const { ctime, mtime } = await stat(absolutePath)
@@ -31,6 +33,7 @@ export async function fileToNode(filename: string, cwd: string) {
   const frontmatterKeys = Object.keys(data)
   return {
     id: getFileNodeId(filename),
+    type: FILE_NODE_TYPE,
     title: data.title,
     date: data.date ? new Date(data.date) : ctime,
     updated: data.updated ? new Date(data.updated) : mtime,
@@ -40,3 +43,5 @@ export async function fileToNode(filename: string, cwd: string) {
     frontmatterKeys,
   }
 }
+
+export const FILE_NODE_TYPE = 'File'

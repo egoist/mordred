@@ -1,21 +1,61 @@
 import { join } from 'path'
 import glob from 'fast-glob'
 import { graphql, GraphQLSchema, buildSchema } from 'graphql'
-import { readFile } from 'fs-extra'
 import { GraphQLJSON } from 'graphql-type-json'
 import { Node, fileToNode, getFileNodeId } from './to-node'
+import localContentPlugin from './plugins/local-content'
+import { Plugin, PluginContext } from './plugin'
 
-export const state: {
+export type State = {
   initialized: boolean
   frontmatterKeys: Set<string>
   schema?: GraphQLSchema
   resolvers?: any
   nodes: Map<string, Node>
-} = {
+  createSchema: () => void
+  createResolvers: () => void
+}
+
+const createSchema = () => {
+  const schema = `
+  scalar JSON
+
+  type Query {
+    hello: String
+  }
+  ` + (plugins.map((plugin) => plugin.context.schema).join('\n\n'))
+  state.schema = buildSchema(
+    schema
+  )
+}
+
+const createResolvers = () => {
+  state.resolvers = plugins.reduce((resolvers, plugin) => {
+    return {
+      ...resolvers,
+      ...plugin.context.resolvers,
+    }
+  }, {
+    JSON: GraphQLJSON
+  })
+}
+
+export const state: State = {
   initialized: false,
   frontmatterKeys: new Set(),
   nodes: new Map(),
+  createSchema,
+  createResolvers,
 }
+
+const plugins = [localContentPlugin].map((pluginFactory) => {
+  const context = new PluginContext(state)
+  const plugin = pluginFactory(context)
+  return {
+    context,
+    plugin,
+  }
+})
 
 export async function query(query: string) {
   await init()
@@ -34,106 +74,12 @@ export async function init() {
     )
   }
 
-  const fileGlobs = '**/*.md'
-  const contentDir = join(process.env.__MORDRED_CONTEXT, 'content')
-  const files = await glob(fileGlobs, {
-    cwd: contentDir,
-  })
-
-  await Promise.all(
-    files.map(async (filename) => {
-      await setNode(filename, contentDir)
-    })
-  )
-
-  state.schema = createSchema()
-
-  const resolvers = {
-    allMarkdownPosts() {
-      const nodes = [...state.nodes.values()]
-      return {
-        nodes,
-        pageInfo: {
-          hasNext: false,
-          hasPrev: false,
-          nextLink: '',
-          prevLink: '',
-        },
-      }
-    },
-    JSON: GraphQLJSON,
+  for (const plugin of plugins) {
+    await plugin.plugin.onInit()
   }
 
-  state.resolvers = resolvers
-
-  if (process.env.NODE_ENV === 'development') {
-    const { watch } = await import('chokidar')
-    watch(fileGlobs, {
-      cwd: contentDir,
-      ignoreInitial: true,
-    })
-      .on('add', async (filename) => {
-        await setNode(filename, contentDir)
-        state.schema = createSchema()
-      })
-      .on('unlink', (filename) => {
-        const nodeId = getFileNodeId(filename)
-        state.nodes.delete(nodeId)
-        state.schema = createSchema()
-      })
-      .on('change', async (filename) => {
-        await setNode(filename, contentDir)
-        state.schema = createSchema()
-      })
-  }
+  state.createSchema()
+  state.createResolvers()
 }
 
-export function gql(literals: string[], ...variables: any[]) {
-  return literals
-    .map((l, i) => {
-      const variable = variables[i]
-      return `${l}${variable ? variable : ''}`
-    })
-    .join('')
-}
-
-async function setNode(filename: string, cwd: string) {
-  const node = await fileToNode(filename, cwd)
-  state.nodes.set(node.id, node)
-  for (const key of node.frontmatterKeys) {
-    state.frontmatterKeys.add(key)
-  }
-  return node
-}
-
-function createSchema() {
-  return buildSchema(`
-  scalar JSON
-
-type FrontMatter {
-  ${[...state.frontmatterKeys]
-    .map((key) => {
-      return `${key}: JSON`
-    })
-    .join('\n')}
-}
-
-type MarkdownPost {
-  id: String!
-  title: String
-  createdAt: String!
-  updatedAt: String!
-  content: String!
-  contentHTML: String!
-  frontmatter: FrontMatter!
-}
-
-type MarkdownPostConnection {
-  nodes: [MarkdownPost!]!
-}
-
-  type Query {
-    allMarkdownPosts: MarkdownPostConnection!
-  }
-`)
-}
+export { gql } from './gql'
