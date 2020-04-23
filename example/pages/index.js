@@ -1,7 +1,7 @@
 import { query, gql } from '../../query'
 
 export const getStaticProps = async () => {
-  const { allMarkdownPosts } = await query(gql`
+  const { data } = await query(gql`
     {
       allMarkdownPosts {
         nodes {
@@ -17,7 +17,7 @@ export const getStaticProps = async () => {
 
   return {
     props: {
-      allMarkdownPosts,
+      ...data,
     },
   }
 }

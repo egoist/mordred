@@ -20,7 +20,7 @@ export const state: {
 export async function query(query: string) {
   await init()
   const response = await graphql(state.schema!, query, state.resolvers!)
-  return response.data
+  return response
 }
 
 export async function init() {
