@@ -88,6 +88,15 @@ export async function init() {
   }
 }
 
+export function gql(literals: string[], ...variables: any[]) {
+  return literals
+    .map((l, i) => {
+      const variable = variables[i]
+      return `${l}${variable ? variable : ''}`
+    })
+    .join('')
+}
+
 async function setNode(filename: string, cwd: string) {
   const node = await fileToNode(filename, cwd)
   state.nodes.set(node.id, node)

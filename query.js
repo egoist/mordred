@@ -1,1 +1,1 @@
-module.exports = require('./dist/query').query
+module.exports = require('./dist/query')

@@ -1,18 +1,18 @@
-import query from '../../query'
+import { query, gql } from '../../query'
 
 export const getStaticProps = async () => {
-  const { allMarkdownPosts } = await query(`
-  {
-    allMarkdownPosts {
-      nodes {
-        id
-        contentHTML
-        frontmatter {
-          title
+  const { allMarkdownPosts } = await query(gql`
+    {
+      allMarkdownPosts {
+        nodes {
+          id
+          contentHTML
+          frontmatter {
+            title
+          }
         }
       }
     }
-  }
   `)
 
   return {
