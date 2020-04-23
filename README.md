@@ -43,7 +43,7 @@ title: My First Post
 date: 2020-04-24
 ---
 
-This is my __first__ post!
+This is my **first** post!
 ```
 
 In any page, fetch data with `getStaticProps`:
@@ -53,41 +53,39 @@ import { query, gql } from 'mordred/query'
 
 export const getStaticProps = async () => {
   const { allMarkdownPosts } = await query(gql`
-  {
-    allMarkdownPosts {
-      nodes {
-        id
-        # frontmatter.date
-        # fallback to file creation time
-        date
-        # frontmatter.updated
-        # fallback to file modification time
-        updated
-        contentHTML
-        frontmatter {
-          title
+    {
+      allMarkdownPosts {
+        nodes {
+          id
+          # frontmatter.date
+          # fallback to file creation time
+          date
+          # frontmatter.updated
+          # fallback to file modification time
+          updated
+          contentHTML
+          frontmatter {
+            title
+          }
         }
       }
     }
-  }
   `)
   return {
     props: {
-      allMarkdownPosts
-    }
+      allMarkdownPosts,
+    },
   }
 }
 
 export default ({ allMarkdownPosts }) => {
-  return <>
-  <ul>
-    {allMarkdownPosts.map(post => {
-      return <li key={post.id}>
-      {post.frontmatter.title}
-      </li>
-    })}
-  </ul>
-  </>
+  return (
+    <ul>
+      {allMarkdownPosts.map((post) => {
+        return <li key={post.id}>{post.frontmatter.title}</li>
+      })}
+    </ul>
+  )
 }
 ```
 
