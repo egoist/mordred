@@ -81,7 +81,7 @@ export const getStaticProps = async () => {
 export default ({ allMarkdownPosts }) => {
   return (
     <ul>
-      {allMarkdownPosts.map((post) => {
+      {allMarkdownPosts.nodes.map((post) => {
         return <li key={post.id}>{post.frontmatter.title}</li>
       })}
     </ul>
