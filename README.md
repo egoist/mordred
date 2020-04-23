@@ -49,10 +49,10 @@ This is my __first__ post!
 In any page, fetch data with `getStaticProps`:
 
 ```js
-import query from 'mordred/query'
+import { query, gql } from 'mordred/query'
 
-export const getStaticProps = () => {
-  const { allMarkdownPosts } = await query(`
+export const getStaticProps = async () => {
+  const { allMarkdownPosts } = await query(gql`
   {
     allMarkdownPosts {
       nodes {
