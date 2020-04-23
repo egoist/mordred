@@ -1,14 +1,27 @@
+## Mordred
+
+## Table of Contents
+
+<!-- toc -->
+
+- [Install](#install)
+- [Usage with Next.js](#usage-with-nextjs)
+  * [Configuration](#configuration)
+  * [Using Data](#using-data)
+- [Usage With Nuxt.js](#usage-with-nuxtjs)
+- [License](#license)
+
+<!-- tocstop -->
+
 ## Install
 
 ```bash
 yarn add mordred
 ```
 
-## Guide
+## Usage with Next.js
 
-### With Next.js
-
-#### Configuration
+### Configuration
 
 In `next.config.js`:
 
@@ -16,11 +29,22 @@ In `next.config.js`:
 const withMordred = require('mordred/next')
 
 module.exports = withMordred({})({
-  // Your next.js config
+  // ..rest of your next.js config
 })
 ```
 
-#### Use Data
+### Using Data
+
+Create a Markdown file in `content` folder (in your project root), like `content/my-first-posts.md`:
+
+```markdown
+---
+title: My First Post
+date: 2020-04-24
+---
+
+This is my __first__ post!
+```
 
 In any page, fetch data with `getStaticProps`:
 
@@ -33,7 +57,11 @@ export const getStaticProps = () => {
     allMarkdownPosts {
       nodes {
         id
+        # frontmatter.date
+        # fallback to file creation time
         date
+        # frontmatter.updated
+        # fallback to file modification time
         updated
         contentHTML
         frontmatter {
@@ -63,7 +91,7 @@ export default ({ allMarkdownPosts }) => {
 }
 ```
 
-### With Nuxt.js
+## Usage With Nuxt.js
 
 [TODO]
 
