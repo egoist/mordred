@@ -6,8 +6,9 @@
 
 - [Install](#install)
 - [Usage with Next.js](#usage-with-nextjs)
-  - [Configuration](#configuration)
-  - [Using Data](#using-data)
+  * [Configuration](#configuration)
+  * [Using Data](#using-data)
+  * [Exploring Data with GraphiQL](#exploring-data-with-graphiql)
 - [Usage With Nuxt.js](#usage-with-nuxtjs)
 - [License](#license)
 
