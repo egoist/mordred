@@ -5,11 +5,27 @@
   "repository": "git@github.com:egoist/mordred-test.git",
   "author": "EGOIST <0x142857@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "toc": "markdown-toc -i README.md"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "README.md": [
+      "yarn markdown-toc -i"
+    ]
+  },
   "workspaces": [
     "packages/*"
   ],
   "devDependencies": {
     "lerna": "^3.20.2",
-    "typescript": "^3.8.3"
+    "typescript": "^3.8.3",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.1.7",
+    "markdown-toc": "^1.2.0"
   }
 }

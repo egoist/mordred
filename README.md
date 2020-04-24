@@ -115,7 +115,7 @@ export default ({ allMarkdown }) => {
 }
 ```
 
-### Exploreing Data
+### Exploring Data with GraphiQL
 
 You can create an API at `/api/graphql` to explore data via GraphiQL:
 
