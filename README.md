@@ -87,12 +87,12 @@ date: 2020-04-24
 This is my **first** post!
 ````
 
-When you run `next` or `next build`,Mordred will generate a GraphQL client in `mordred/` folder, then you can use the generated client to query data.
+When you run `next` or `next build`, Mordred will generate a GraphQL client at `mordred/graphql.js`, then you can use the generated client to query data.
 
 Now in any page, query data in `getStaticProps`:
 
 ```js
-import { query, gql } from '../mordred/query'
+import { query, gql } from '../mordred/graphql'
 
 export const getStaticProps = async () => {
   const { data, errors } = await query(gql`
