@@ -52,6 +52,8 @@ const plugin: PluginFactory = (ctx) => {
       }
 
       extend type Query {
+        markdownBySlug(slug: String!): MarkdownNode
+
         allMarkdown(orderBy: MarkdownNodeOrderBy, order: MarkdownNodeOrder, limit: Int, skip: Int): MarkdownConnection
       }
       `
@@ -60,6 +62,11 @@ const plugin: PluginFactory = (ctx) => {
     getResolvers() {
       return `{
         Query: {
+          markdownBySlug(parent, args) {
+            const node = nodes.find(node => node.type === 'Markdown' && node.slug === args.slug)
+            return node
+          },
+
           allMarkdown(parent, args) {
             const orderBy = args.orderBy || 'createdAt'
             const order = args.order || 'DESC'
