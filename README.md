@@ -166,7 +166,7 @@ We're waiting for Nuxt's full-static mode, it's already possible to use Mordred 
 ## Plugin List
 
 - [mordred-source-filesystem](/packages/mordred-source-filesystem)
-- [mordred-transformer-markdown](/packages/mordred-source-markdown)
+- [mordred-transformer-markdown](/packages/mordred-transformer-markdown)
 
 ## License
 
