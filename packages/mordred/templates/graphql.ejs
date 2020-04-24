@@ -28,8 +28,8 @@ export const schema = makeExecutableSchema({
   resolvers
 })
 
-export const query = (query, { variable } = {}) => {
-  return graphql(schema, query, {}, {}, variable)
+export const query = (query, { variables } = {}) => {
+  return graphql(schema, query, {}, {}, variables)
 }
 
 export function gql(literals, ...variables) {

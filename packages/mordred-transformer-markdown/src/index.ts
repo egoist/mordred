@@ -1,7 +1,8 @@
 import { PluginFactory } from 'mordred'
 import grayMatter from 'gray-matter'
+import { markdownPluginHeadings } from './markdown-plugin-headings'
 
-const plugin: PluginFactory = (ctx) => {
+const plugin: PluginFactory = (ctx, options) => {
   const frontmatterKeys: Set<string> = new Set()
 
   return {
@@ -29,7 +30,7 @@ const plugin: PluginFactory = (ctx) => {
       enum MarkdownNodeOrderBy {
         createdAt
         updatedAt
-        ${[...frontmatterKeys].map(key => {
+        ${[...frontmatterKeys].map((key) => {
           return `frontmatter_${key}`
         })}
       }
@@ -39,16 +40,29 @@ const plugin: PluginFactory = (ctx) => {
         DESC
       }
 
+      type MarkdownNodeHeading {
+        depth: Int!
+        text: String!
+      }
+
       type MarkdownNode {
         ${FileNode}
         html: String!
+        headings: [MarkdownNodeHeading!]!
         frontmatter: ${
           frontmatterKeys.size === 0 ? 'JSON' : `MarkdownFrontMatter`
         }
       }
 
+      type MarkdownPageInfo {
+        hasPrevPage: Boolean!
+        hasNextPage: Boolean!
+        pageCount: Int!
+      }
+
       type MarkdownConnection {
         nodes: [MarkdownNode]
+        pageInfo: MarkdownPageInfo!
       }
 
       extend type Query {
@@ -78,7 +92,7 @@ const plugin: PluginFactory = (ctx) => {
               return obj[path]
             } 
 
-            let result = nodes.filter(node => {
+            const markdownNodes = nodes.filter(node => {
               return node.type === 'Markdown'
             }).sort((a, b) => {
               const aValue = getValue(a, orderBy)
@@ -88,21 +102,19 @@ const plugin: PluginFactory = (ctx) => {
               }
               return aValue > bValue ? -1 : 1
             })
-            result = result.slice(skip, args.limit ? (skip + args.limit) : result.length)
+            const endIndex = args.limit ? (skip + args.limit) : markdownNodes.length
+            const result = markdownNodes.slice(skip, endIndex)
+            const pageCount = args.limit ?  Math.ceil(markdownNodes.length / args.limit) : 1
+            const hasNextPage = endIndex < markdownNodes.length
+            const hasPrevPage = skip > 0
             return {
-              nodes: result
+              nodes: result,
+              pageInfo: {
+                hasPrevPage,
+                hasNextPage,
+                pageCount
+              }
             }
-          }
-        },
-        MarkdownNode: {
-          html(parent) {
-            const Markdown = require('markdown-it')
-            const md = new Markdown({
-              html: true
-            })
-
-            const html = md.render(parent.content, {})
-            return html
           }
         }
       }`
@@ -118,11 +130,26 @@ const plugin: PluginFactory = (ctx) => {
           for (const key of Object.keys(data)) {
             frontmatterKeys.add(key)
           }
+          const Markdown = require('markdown-it')
+          const md = new Markdown({
+            html: options.html !== false,
+            breaks: options.breaks,
+            linkify: options.linkify,
+            typographer: options.typographer,
+            highlight: options.highlight,
+            quotes: options.quotes,
+            langPrefix: options.langPrefix,
+          })
+          md.use(markdownPluginHeadings)
+          const env = {headings: []}
+          const html = md.render(content, env)
           return {
             ...node,
             id: `Markdown::${node.id}`,
             type: 'Markdown',
             content,
+            html,
+            headings: env.headings,
             frontmatter: data,
           }
         })

@@ -1,18 +1,19 @@
+# mordred-transformer-markdown
+
+Parse markdown files using [markdown-it](https://github.com/markdown-it/markdown-it).
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [mordred-transformer-markdown](#mordred-transformer-markdown)
-  - [Install](#install)
-  - [How to use](#how-to-use)
-  - [How to query](#how-to-query)
-  - [License](#license)
+- [Install](#install)
+- [How to use](#how-to-use)
+- [How to query](#how-to-query)
+  - [Query Markdown Headings](#query-markdown-headings)
+  - [Pagination](#pagination)
+- [License](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
-# mordred-transformer-markdown
-
-Parse markdown files using [markdown-it](https://github.com/markdown-it/markdown-it).
 
 ## Install
 
@@ -53,6 +54,40 @@ A simple query:
         # Assumes you're using title in your frontmatter.
         title
       }
+    }
+  }
+}
+```
+
+### Query Markdown Headings
+
+```graphql
+{
+  allMarkdown {
+    nodes {
+      headings {
+        depth
+        text
+      }
+    }
+  }
+}
+```
+
+### Pagination
+
+By default markdown nodes are ordered by `createdAt` in `DESC`, but you can also order them by any frontmatter key:
+
+```graphql
+{
+  allMarkdown(orderBy: frontmatter_title, skip: 5, limit: 5) {
+    nodes {
+      slug
+    }
+    pageInfo {
+      hasNextPage
+      hasPrevPage
+      pageCount
     }
   }
 }
