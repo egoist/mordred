@@ -6,8 +6,8 @@
 
 - [Install](#install)
 - [Usage with Next.js](#usage-with-nextjs)
-  * [Configuration](#configuration)
-  * [Using Data](#using-data)
+  - [Configuration](#configuration)
+  - [Using Data](#using-data)
 - [Usage With Nuxt.js](#usage-with-nuxtjs)
 - [License](#license)
 
@@ -26,11 +26,29 @@ yarn add mordred
 In `next.config.js`:
 
 ```js
-const withMordred = require('mordred/next')
+module.exports = {
+  webpack(config) {
+    const { MordredWebpackPlugin } = require('mordred/webpack')
 
-module.exports = withMordred({})({
-  // ..rest of your next.js config
-})
+    const mordredPlugin = new MordredWebpackPlugin({
+      plugins: [
+        {
+          resolve: 'mordred-source-filesystem',
+          options: {
+            // This is where you'll be creating Markdown files
+            path: __dirname + '/content',
+          },
+        },
+        {
+          resolve: 'mordred-source-markdown',
+        },
+      ],
+    })
+
+    config.plugins.push(mordredPlugin)
+    return config
+  },
+}
 ```
 
 ### Using Data
@@ -46,43 +64,48 @@ date: 2020-04-24
 This is my **first** post!
 ```
 
-In any page, fetch data with `getStaticProps`:
+When you run `next` or `next build`,Mordred will generate a GraphQL client in `mordred/` folder, then you can use the generated client to query data.
+
+Now in any page, query data in `getStaticProps`:
 
 ```js
-import { query, gql } from 'mordred/query'
+import { query, gql } from '../mordred/query'
 
 export const getStaticProps = async () => {
-  const { allMarkdownPosts } = await query(gql`
+  const { data, errors } = await query(gql`
     {
-      allMarkdownPosts {
+      allMarkdown {
         nodes {
           id
-          # frontmatter.date
-          # fallback to file creation time
-          date
-          # frontmatter.updated
-          # fallback to file modification time
-          updated
+          slug
+          title
+          createdAt
+          updatedAt
           contentHTML
-          frontmatter {
-            title
-          }
+          # ... or any frontmatter
         }
       }
     }
   `)
+  if (errors) {
+    throw errors[0]
+  }
   return {
     props: {
-      allMarkdownPosts,
+      ...data,
     },
   }
 }
 
-export default ({ allMarkdownPosts }) => {
+export default ({ allMarkdown }) => {
   return (
     <ul>
-      {allMarkdownPosts.nodes.map((post) => {
-        return <li key={post.id}>{post.frontmatter.title}</li>
+      {allMarkdown.nodes.map((post) => {
+        return (
+          <li key={post.id}>
+            <Link href={`/post/${post.slug}`}>{post.title}</Link>
+          </li>
+        )
       })}
     </ul>
   )

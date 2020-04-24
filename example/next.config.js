@@ -1,3 +1,20 @@
-const withMordred = require('../next')
+module.exports = {
+  webpack(config) {
+    const { MordredWebpackPlugin } = require('mordred/webpack')
 
-module.exports = withMordred()({})
+    const mordredPlugin = new MordredWebpackPlugin({
+      plugins: [
+        {
+          resolve: 'mordred-source-filesystem',
+          options: {
+            path: __dirname + '/content',
+          },
+        },
+      ],
+    })
+
+    config.plugins.push(mordredPlugin)
+
+    return config
+  },
+}

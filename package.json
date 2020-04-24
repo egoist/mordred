@@ -1,62 +1,14 @@
 {
-  "version": "0.0.0",
+  "private": true,
   "name": "mordred",
-  "files": [
-    "dist",
-    "/next.js",
-    "/query.js"
-  ],
+  "version": "1.0.0",
+  "repository": "git@github.com:egoist/mordred-test.git",
+  "author": "EGOIST <0x142857@gmail.com>",
   "license": "MIT",
-  "scripts": {
-    "toc": "markdown-toc -i README.md",
-    "build": "tsc",
-    "watch": "tsc --watch",
-    "example": "next example"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "README.md": [
-      "yarn markdown-toc -i"
-    ]
-  },
+  "workspaces": [
+    "packages/*"
+  ],
   "devDependencies": {
-    "@types/express": "^4.17.6",
-    "@types/fs-extra": "^8.1.0",
-    "@types/graphql-type-json": "^0.3.2",
-    "@types/hash-sum": "^1.0.0",
-    "@types/markdown-it": "^10.0.0",
-    "@types/node": "^13.13.2",
-    "husky": "^4.2.5",
-    "lint-staged": "^10.1.7",
-    "markdown-toc": "^1.2.0",
-    "next": "^9.3.5",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
     "typescript": "^3.8.3"
-  },
-  "dependencies": {
-    "chokidar": "^3.3.1",
-    "express": "^4.17.1",
-    "express-graphql": "^0.9.0",
-    "fast-glob": "^3.2.2",
-    "fs-extra": "^9.0.0",
-    "graphql": "^15.0.0",
-    "graphql-type-json": "^0.3.1",
-    "gray-matter": "^4.0.2",
-    "hash-sum": "^2.0.0",
-    "markdown-it": "^10.0.0",
-    "rehype-stringify": "^7.0.0",
-    "remark": "^12.0.0",
-    "remark-frontmatter": "^2.0.0",
-    "remark-html": "^11.0.1",
-    "remark-parse": "^8.0.2",
-    "remark-rehype": "^6.0.0",
-    "remark-stringify": "^8.0.0",
-    "to-vfile": "^6.1.0",
-    "unified": "^9.0.0"
   }
 }

@@ -3,3 +3,4 @@ dist
 .next
 .DS_Store
 *.log
+example/mordred

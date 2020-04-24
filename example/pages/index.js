@@ -1,18 +1,19 @@
-import { query, gql } from '../../query'
+import { query } from '../mordred/graphql'
 
 export const getStaticProps = async () => {
-  const { data } = await query(gql`
+  const { data, errors } = await query(`
     {
-      allMarkdownPosts {
+      allFile {
         nodes {
           id
-          title
-          contentHTML
+          content
         }
       }
     }
   `)
-
+  if (errors) {
+    throw errors[0]
+  }
   return {
     props: {
       ...data,
@@ -20,15 +21,15 @@ export const getStaticProps = async () => {
   }
 }
 
-export default ({ allMarkdownPosts }) => {
+export default ({ allFile }) => {
   return (
     <>
       <ul>
-        {allMarkdownPosts.nodes.map((post) => {
+        {allFile.nodes.map((post) => {
           return (
             <li key={post.id}>
               <h2>{post.title}</h2>
-              <div dangerouslySetInnerHTML={{ __html: post.contentHTML }}></div>
+              <div dangerouslySetInnerHTML={{ __html: post.content }}></div>
             </li>
           )
         })}
