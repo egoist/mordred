@@ -40,19 +40,20 @@ const plugin: PluginFactory = (ctx) => {
       })
 
       const frontmatterKeys = ctx.state.frontmatterKeys
-      ctx.setSchema(gql`
-    ${
-      frontmatterKeys.size > 0
-        ? `type FrontMatter {
-      ${[...frontmatterKeys]
-        .map((key) => {
-          return `${key}: JSON`
-        })
-        .join('\n')}
-    }`
-        : ``
-    }
-  
+
+      const frontmatterTypes =
+        frontmatterKeys.size > 0
+          ? [...frontmatterKeys]
+              .filter((key) => {
+                return !['title', 'date', 'updated'].includes(key)
+              })
+              .map((key) => {
+                return `${key}: JSON`
+              })
+              .join('\n')
+          : ``
+
+      ctx.setSchema(gql`  
     type MarkdownPost {
       id: String!
       title: String
@@ -60,7 +61,7 @@ const plugin: PluginFactory = (ctx) => {
       updated: String!
       content: String!
       contentHTML: String!
-      frontmatter: ${frontmatterKeys.size === 0 ? 'JSON' : 'FrontMatter'}!
+      ${frontmatterTypes}
     }
   
     type MarkdownPostConnection {

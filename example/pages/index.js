@@ -6,10 +6,8 @@ export const getStaticProps = async () => {
       allMarkdownPosts {
         nodes {
           id
+          title
           contentHTML
-          frontmatter {
-            title
-          }
         }
       }
     }
@@ -29,7 +27,7 @@ export default ({ allMarkdownPosts }) => {
         {allMarkdownPosts.nodes.map((post) => {
           return (
             <li key={post.id}>
-              <h2>{post.frontmatter.title}</h2>
+              <h2>{post.title}</h2>
               <div dangerouslySetInnerHTML={{ __html: post.contentHTML }}></div>
             </li>
           )
