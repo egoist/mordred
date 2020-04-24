@@ -1,5 +1,7 @@
 # 🤺 Mordred 
 
+[![npm version](https://flat.badgen.net/npm/v/mordred?scale=1.5)](https://npm.im/mordred) [![community](https://flat.badgen.net/badge/icon/discord?icon=discord&label=community&scale=1.5)](https://chat.egoist.sh)
+
 __Source data from anywhere, for Next.js, Nuxt.js, Eleventy and many more.__
 
 ## Features
