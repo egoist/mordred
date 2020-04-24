@@ -1,4 +1,5 @@
 import { Compiler } from 'webpack'
+import JoyCon from 'joycon'
 import { Mordred } from './'
 
 type PluginConfigObject = {
@@ -15,22 +16,27 @@ export type MordredConfig = {
 let initialized = false
 
 export class MordredWebpackPlugin {
-  config: MordredConfig
-
-  constructor(config: MordredConfig = {}) {
-    this.config = config
+  loadConfig(cwd: string): MordredConfig {
+    const joycon = new JoyCon()
+    const { path, data } = joycon.loadSync(['mordred.config.js'], cwd)
+    if (!path) {
+      throw new Error(`Cannot find mordred.config.js in your project`)
+    }
+    return data || {}
   }
 
   apply(compiler: Compiler) {
     if (initialized) {
-      return 
+      return
     }
 
     initialized = true
 
-    const webpackContext = compiler.context
+    const webpackContext = compiler.context || process.cwd()
 
-    const mordred = new Mordred(this.config, {
+    const config = this.loadConfig(webpackContext)
+
+    const mordred = new Mordred(config, {
       cwd: webpackContext,
     })
 

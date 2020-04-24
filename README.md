@@ -2,18 +2,20 @@
 
 ## Table of Contents
 
-<!-- toc -->
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
 
 - [Install](#install)
 - [Usage with Next.js](#usage-with-nextjs)
-  * [Configuration](#configuration)
-  * [Using Data](#using-data)
-  * [Exploring Data with GraphiQL](#exploring-data-with-graphiql)
+  - [Configuration](#configuration)
+  - [Using Data](#using-data)
+  - [Exploring Data with GraphiQL](#exploring-data-with-graphiql)
 - [Usage With Nuxt.js](#usage-with-nuxtjs)
 - [Plugin List](#plugin-list)
 - [License](#license)
 
-<!-- tocstop -->
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Install
 
@@ -32,25 +34,36 @@ module.exports = {
   webpack(config) {
     const { MordredWebpackPlugin } = require('mordred/webpack')
 
-    const mordredPlugin = new MordredWebpackPlugin({
-      plugins: [
-        {
-          resolve: 'mordred-source-filesystem',
-          options: {
-            // This is where you'll be creating Markdown files
-            path: __dirname + '/content',
-          },
-        },
-        {
-          resolve: 'mordred-transformer-markdown',
-        },
-      ],
-    })
-
+    const mordredPlugin = new MordredWebpackPlugin()
     config.plugins.push(mordredPlugin)
     return config
   },
 }
+```
+
+Then create a `mordred.config.js` in the same directory and use some plugins:
+
+```js
+module.exports = {
+  plugins: [
+    {
+      resolve: 'mordred-source-filesystem',
+      options: {
+        // This is where you'll be creating Markdown files
+        path: __dirname + '/content',
+      },
+    },
+    {
+      resolve: 'mordred-transformer-markdown',
+    },
+  ],
+}
+```
+
+You also need to install these plugins:
+
+```bash
+yarn add mordred-source-filesystem mordred-transformer-markdown
 ```
 
 ### Using Data
@@ -64,7 +77,7 @@ date: 2020-04-24
 ---
 
 This is my **first** post!
-```
+````
 
 When you run `next` or `next build`,Mordred will generate a GraphQL client in `mordred/` folder, then you can use the generated client to query data.
 

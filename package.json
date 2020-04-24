@@ -6,7 +6,7 @@
   "author": "EGOIST <0x142857@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "toc": "markdown-toc -i README.md"
+    "toc": "doctoc README.md"
   },
   "husky": {
     "hooks": {
@@ -15,17 +15,17 @@
   },
   "lint-staged": {
     "README.md": [
-      "yarn markdown-toc -i"
+      "yarn doctoc"
     ]
   },
   "workspaces": [
     "packages/*"
   ],
   "devDependencies": {
-    "lerna": "^3.20.2",
-    "typescript": "^3.8.3",
+    "doctoc": "^1.4.0",
     "husky": "^4.2.5",
+    "lerna": "^3.20.2",
     "lint-staged": "^10.1.7",
-    "markdown-toc": "^1.2.0"
+    "typescript": "^3.8.3"
   }
 }

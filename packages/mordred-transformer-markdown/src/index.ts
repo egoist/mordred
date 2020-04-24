@@ -26,6 +26,19 @@ const plugin: PluginFactory = (ctx) => {
       return `
       ${MarkdownFrontMatter}
 
+      enum MarkdownNodeOrderBy {
+        createdAt
+        updatedAt
+        ${[...frontmatterKeys].map(key => {
+          return `frontmatter_${key}`
+        })}
+      }
+
+      enum MarkdownNodeOrder {
+        ASC
+        DESC
+      }
+
       type MarkdownNode {
         ${FileNode}
         html: String!
@@ -39,7 +52,7 @@ const plugin: PluginFactory = (ctx) => {
       }
 
       extend type Query {
-        allMarkdown: MarkdownConnection
+        allMarkdown(orderBy: MarkdownNodeOrderBy, order: MarkdownNodeOrder, limit: Int, skip: Int): MarkdownConnection
       }
       `
     },
@@ -47,10 +60,28 @@ const plugin: PluginFactory = (ctx) => {
     getResolvers() {
       return `{
         Query: {
-          allMarkdown() {
-            const result = nodes.filter(node => {
+          allMarkdown(parent, args) {
+            const orderBy = args.orderBy || 'createdAt'
+            const order = args.order || 'DESC'
+            const skip = args.skip || 0
+            const getValue = (obj, path) => {
+              if (path.startsWith('frontmatter_')) {
+                return obj.frontmatter[path.replace('frontmatter_', '')]
+              }
+              return obj[path]
+            } 
+
+            let result = nodes.filter(node => {
               return node.type === 'Markdown'
+            }).sort((a, b) => {
+              const aValue = getValue(a, orderBy)
+              const bValue = getValue(b, orderBy)
+              if (order === 'ASC') {
+                return aValue > bValue ? 1 : -1
+              }
+              return aValue > bValue ? -1 : 1
             })
+            result = result.slice(skip, args.limit ? (skip + args.limit) : result.length)
             return {
               nodes: result
             }
