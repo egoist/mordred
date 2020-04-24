@@ -14,32 +14,12 @@ const plugin: PluginFactory = (
   return {
     name: 'source-filesystem',
 
-    async onInit() {
-      const files = await glob(contentGlobs, {
-        cwd: contentDir,
-      })
-
-      await Promise.all(
-        files.map(async (filename) => {
-          await setNode(ctx.mordred, filename, contentDir)
-        })
-      )
-
-      ctx.setResolvers(`{
-        allFile() {
-          const result = [...nodes.values()].filter(
-            (node) => node.type === "${FILE_NODE_TYPE}"
-          )
-          return {
-            nodes: result,
-          }
-        },
-      }`)
-
-      ctx.setSchema(gql`
-        type File {
+    getSchema() {
+      return gql`
+        type FileNode {
           id: String!
           type: String!
+          mime: String
           createdAt: String!
           updatedAt: String!
           content: String!
@@ -49,32 +29,54 @@ const plugin: PluginFactory = (
         }
 
         type FileConnection {
-          nodes: [File!]!
+          nodes: [FileNode!]!
         }
 
         extend type Query {
           allFile: FileConnection!
         }
-      `)
+      `
+    },
 
+    getResolvers() {
+      return `{
+        Query: {
+          allFile() {
+            const result = nodes.filter(
+              (node) => node.type === "${FILE_NODE_TYPE}"
+            )
+            return {
+              nodes: result,
+            }
+          }
+        }
+      }`
+    },
+
+    async createNodes() {
+      const files = await glob(contentGlobs, {
+        cwd: contentDir,
+      })
+
+      const nodes = await Promise.all(
+        files.map((filename) => {
+          return fileToNode(filename, contentDir, ctx.mime.getType)
+        })
+      )
+
+      return nodes
+    },
+
+    async onInit() {
       if (process.env.NODE_ENV === 'development') {
         const { watch } = await import('chokidar')
         watch(contentGlobs, {
           cwd: contentDir,
           ignoreInitial: true,
         })
-          .on('add', async (filename) => {
-            await setNode(ctx.mordred, filename, contentDir)
-            ctx.writeAll()
-          })
-          .on('unlink', (filename) => {
-            const nodeId = getFileNodeId(filename)
-            ctx.mordred.nodes.delete(nodeId)
-            ctx.writeAll()
-          })
-          .on('change', async (filename) => {
-            await setNode(ctx.mordred, filename, contentDir)
-            ctx.writeAll()
+          .on('all', async () => {
+            await ctx.createNodes()
+            await ctx.writeAll()
           })
       }
     },
@@ -82,9 +84,3 @@ const plugin: PluginFactory = (
 }
 
 export default plugin
-
-async function setNode(mordred: Mordred, filename: string, cwd: string) {
-  const node = await fileToNode(filename, cwd)
-  mordred.nodes.set(node.id, node)
-  return node
-}

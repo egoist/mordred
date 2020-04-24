@@ -3,10 +3,14 @@ import { query } from '../mordred/graphql'
 export const getStaticProps = async () => {
   const { data, errors } = await query(`
     {
-      allFile {
+      allMarkdown {
         nodes {
           id
-          content
+          html
+          createdAt
+          frontmatter {
+            title
+          }
         }
       }
     }
@@ -21,15 +25,15 @@ export const getStaticProps = async () => {
   }
 }
 
-export default ({ allFile }) => {
+export default ({ allMarkdown }) => {
   return (
     <>
       <ul>
-        {allFile.nodes.map((post) => {
+        {allMarkdown.nodes.map((post) => {
           return (
             <li key={post.id}>
-              <h2>{post.title}</h2>
-              <div dangerouslySetInnerHTML={{ __html: post.content }}></div>
+              <h2>{post.frontmatter.title}</h2>
+              <div dangerouslySetInnerHTML={{ __html: post.html }}></div>
             </li>
           )
         })}

@@ -1,6 +1,7 @@
-import { join } from 'path'
+import { join, extname } from 'path'
 import hashsum from 'hash-sum'
 import { stat, readFile } from 'fs-extra'
+import { getType as GetType } from 'mime'
 
 export const getFileNodeId = (filename: string) => {
   return hashsum(`file::${filename}`)
@@ -9,6 +10,7 @@ export const getFileNodeId = (filename: string) => {
 export type FileNode = {
   id: string
   type: typeof FILE_NODE_TYPE
+  mime: string | null
   createdAt: Date
   updatedAt: Date
   content: string
@@ -17,13 +19,14 @@ export type FileNode = {
   slug: string
 }
 
-export async function fileToNode(filename: string, cwd: string): Promise<FileNode> {
+export async function fileToNode(filename: string, cwd: string, getType: typeof GetType): Promise<FileNode> {
   const absolutePath = join(cwd, filename)
   const content = await readFile(absolutePath, 'utf8')
   const { ctime, mtime } = await stat(absolutePath)
   return {
     id: getFileNodeId(filename),
     type: FILE_NODE_TYPE,
+    mime: getType(extname(filename)),
     createdAt: ctime,
     updatedAt: mtime,    
     content,

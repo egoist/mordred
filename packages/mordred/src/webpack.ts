@@ -34,7 +34,15 @@ export class MordredWebpackPlugin {
       cwd: webpackContext,
     })
 
+    let started = false
     compiler.hooks.watchRun.tapPromise('mordred', async () => {
+      if (started) {
+        return
+      }
+      started = true
+      await mordred.init()
+    })
+    compiler.hooks.run.tapPromise('mordred', async () => {
       await mordred.init()
     })
   }

@@ -10,6 +10,10 @@ module.exports = {
             path: __dirname + '/content',
           },
         },
+        {
+          resolve: 'mordred-transformer-markdown',
+          options: {}
+        }
       ],
     })
 

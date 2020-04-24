@@ -1,35 +1,35 @@
-import { buildSchema, graphql } from 'graphql'
+import { graphql } from 'graphql'
+import { makeExecutableSchema } from 'graphql-tools'
 import { GraphQLJSON } from 'graphql-type-json'
 import nodes from './nodes'
 
-let schemaStr = `
+export const typeDefs = [`
   scalar JSON
 
   type Query {
     hello: String
   }
-`
+`]
 
-let resolvers = {
+export const resolvers = [{
   JSON: GraphQLJSON
-}
+}]
 
-<% pluginContextArray.forEach(function (context) { %>
+<% plugins.forEach(function (plugin) { %>
 
-schemaStr += `<%- context.schema %>`
+typeDefs.push(`<%- plugin.getSchema() %>`)
 
-Object.assign(resolvers, <%- context.resolvers %>)
+resolvers.push(<%- plugin.getResolvers() %>)
 
 <% }) %>
 
-export const schema = buildSchema(schemaStr)
+export const schema = makeExecutableSchema({
+  typeDefs,
+  resolvers
+})
 
 export const query = (query, { variable } = {}) => {
-  return graphql(schema, query, resolvers, {}, variable)
-}
-
-export {
-  resolvers
+  return graphql(schema, query, {}, {}, variable)
 }
 
 export function gql(literals, ...variables) {

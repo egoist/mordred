@@ -1,12 +1,12 @@
 import { join } from 'path'
-import { PluginContext, Plugin } from './plugin'
 import { outputFile } from 'fs-extra'
-import devalue from 'devalue'
+import serialize from 'serialize-javascript'
+import mime from 'mime'
 import { graphqlTemplate, graphqlDefinitionTemplate } from './templates'
+import { Plugin } from './plugin'
+import { gql } from './gql'
 
-export {
-  PluginFactory
-} from './plugin'
+export { PluginFactory } from './plugin'
 
 type PluginConfigObject = {
   resolve: string
@@ -18,14 +18,13 @@ type MordredConfigPlugins = PluginConfigObject[]
 export type MordredConfig = {
   plugins?: MordredConfigPlugins
 }
-
 export class Mordred {
   config: MordredConfig
   cwd: string
-  plugins: Array<{
-    context: PluginContext
-    plugin: Plugin
-  }>
+  plugins: Plugin[]
+
+  gql = gql
+  mime = mime
 
   nodes: Map<string, any>
 
@@ -35,13 +34,9 @@ export class Mordred {
     this.nodes = new Map()
 
     this.plugins = (this.config.plugins || []).map(({ resolve, options }) => {
-      const context = new PluginContext(this)
       const pluginDefaultExport = require(resolve).default || require(resolve)
-      const plugin: Plugin = pluginDefaultExport(context, options)
-      return {
-        plugin,
-        context,
-      }
+      const plugin: Plugin = pluginDefaultExport(this, options)
+      return plugin
     })
   }
 
@@ -50,36 +45,60 @@ export class Mordred {
 
     try {
       const outContent = graphqlTemplate({
-        pluginContextArray: this.plugins.map((plugin) => plugin.context),
+        plugins: this.plugins,
       })
-  
+
       await outputFile(outPath, outContent, 'utf8')
-      await outputFile(join(this.cwd, 'mordred/graphql.d.ts'), graphqlDefinitionTemplate, 'utf8')
+      await outputFile(
+        join(this.cwd, 'mordred/graphql.d.ts'),
+        graphqlDefinitionTemplate,
+        'utf8'
+      )
     } catch (err) {
       console.error(err)
       throw err
     }
-  } 
+  }
 
   async writeNodes() {
-    const outPath = join(this.cwd, 'mordred/nodes.js')
-    const outContent = `module.exports = ${devalue(this.nodes)}`
+    const outPath = join(this.cwd, 'mordred/nodes.json')
+    const outContent = `${serialize([...this.nodes.values()], {
+      isJSON: true,
+    })}`
     await outputFile(outPath, outContent, 'utf8')
   }
 
   async writeAll() {
     console.log(`Updating GraphQL client..`)
-    await Promise.all([
-      this.writeNodes(),
-      this.writeGraphQL()
-    ])
+    await Promise.all([this.writeNodes(), this.writeGraphQL()])
+  }
+
+  getPluginSchema(name: string) {
+    const plugin = this.plugins.find((plugin) => plugin.name === name)
+
+    return plugin && plugin.getSchema ? plugin.getSchema() : ''
   }
 
   async init() {
     for (const plugin of this.plugins) {
-      await plugin.plugin.onInit()
+      if (plugin.onInit) {
+        await plugin.onInit()
+      }
     }
 
+    await this.createNodes()
     await this.writeAll()
+  }
+
+  async createNodes() {
+    this.nodes.clear()
+    for (const plugin of this.plugins) {
+      if (plugin.createNodes) {
+        const nodes = await plugin.createNodes()
+        for (const node of nodes) {
+          this.nodes.set(node.id, node)
+        }
+      }
+    }
   }
 }
