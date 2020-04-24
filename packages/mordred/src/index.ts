@@ -1,4 +1,4 @@
-import { join } from 'path'
+import { join, relative } from 'path'
 import { outputFile } from 'fs-extra'
 import serialize from 'serialize-javascript'
 import mime from 'mime'
@@ -40,15 +40,17 @@ export class Mordred {
     })
   }
 
-  async writeGraphQL() {
-    const outPath = join(this.cwd, 'mordred/graphql.js')
+  get graphqlClientPath() {
+    return join(this.cwd, 'mordred/graphql.js')
+  }
 
+  async writeGraphQL() {
     try {
       const outContent = graphqlTemplate({
         plugins: this.plugins,
       })
 
-      await outputFile(outPath, outContent, 'utf8')
+      await outputFile(this.graphqlClientPath, outContent, 'utf8')
       await outputFile(
         join(this.cwd, 'mordred/graphql.d.ts'),
         graphqlDefinitionTemplate,
@@ -69,7 +71,7 @@ export class Mordred {
   }
 
   async writeAll() {
-    console.log(`Updating GraphQL client..`)
+    console.log(`Updating GraphQL client at ${relative(process.cwd(), this.graphqlClientPath)}..`)
     await Promise.all([this.writeNodes(), this.writeGraphQL()])
   }
 

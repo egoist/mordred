@@ -115,6 +115,27 @@ export default ({ allMarkdown }) => {
 }
 ```
 
+### Exploreing Data
+
+You can create an API at `/api/graphql` to explore data via GraphiQL:
+
+```js
+import express from 'express'
+import graphqlHTTP from 'express-graphql'
+import { schema } from '../../mordred/graphql'
+
+const app = express()
+
+app.use(
+  graphqlHTTP({
+    schema,
+    graphiql: true,
+  })
+)
+
+export default app
+```
+
 ## Usage With Nuxt.js
 
 We're waiting for Nuxt's full-static mode, it's already possible to use Mordred with Nuxt's `asyncData` though. We'll document this soon.
