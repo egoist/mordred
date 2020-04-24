@@ -78,11 +78,14 @@ export const getStaticProps = async () => {
         nodes {
           id
           slug
-          title
           createdAt
           updatedAt
-          contentHTML
-          # ... or any frontmatter
+          html
+          frontmatter {
+            # ... or any frontmatter
+            # like:
+            title
+          }
         }
       }
     }
