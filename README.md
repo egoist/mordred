@@ -1,6 +1,6 @@
 ## 🤺 Mordred 
 
-__👀 Source data from anywhere, for Next.js, Nuxt.js, Eleventy and many more.__
+__Source data from anywhere, for Next.js, Nuxt.js, Eleventy and many more.__
 
 ## Features
 
