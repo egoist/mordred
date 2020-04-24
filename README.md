@@ -1,4 +1,12 @@
-## Mordred
+## 🤺 Mordred 
+
+__👀 Source data from anywhere, for Next.js, Nuxt.js, Eleventy and many more.__
+
+## Features
+
+- ✅ Query any data (Markdown, API, database, CMS) with GraphQL
+- ✅ Framework agnostic, works with any framework that has SSG support
+- ✅ Tons of plugins for popular headless CMS (not yet, we need your contribution!) 
 
 ## Table of Contents
 
