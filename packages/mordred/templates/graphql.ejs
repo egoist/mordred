@@ -1,0 +1,42 @@
+import { buildSchema, graphql } from 'graphql'
+import { GraphQLJSON } from 'graphql-type-json'
+import nodes from './nodes'
+
+let schemaStr = `
+  scalar JSON
+
+  type Query {
+    hello: String
+  }
+`
+
+let resolvers = {
+  JSON: GraphQLJSON
+}
+
+<% pluginContextArray.forEach(function (context) { %>
+
+schemaStr += `<%- context.schema %>`
+
+Object.assign(resolvers, <%- context.resolvers %>)
+
+<% }) %>
+
+export const schema = buildSchema(schemaStr)
+
+export const query = (query, { variable } = {}) => {
+  return graphql(schema, query, resolvers, {}, variable)
+}
+
+export {
+  resolvers
+}
+
+export function gql(literals, ...variables) {
+  return literals
+    .map((l, i) => {
+      const variable = variables[i]
+      return `${l}${variable ? variable : ''}`
+    })
+    .join('')
+}

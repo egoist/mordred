@@ -1,0 +1,7 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist" /* Redirect output structure to the directory. */
+  },
+  "include": ["src/**/*"]
+}

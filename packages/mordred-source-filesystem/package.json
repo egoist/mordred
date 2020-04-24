@@ -1,0 +1,14 @@
+{
+  "version": "0.0.0",
+  "name": "mordred-source-filesystem",
+  "files": ["dist"],
+  "main": "dist/index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch"
+  },
+  "peerDependencies": {
+    "mordred": "0.0.0"
+  }
+}
