@@ -6,7 +6,8 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "watch": "tsc --watch"
+    "watch": "tsc --watch",
+    "prepublishOnly": "yarn build"
   },
   "devDependencies": {
     "@types/markdown-it": "^10.0.0"

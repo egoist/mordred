@@ -12,7 +12,8 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch",
-    "example": "next example"
+    "example": "next example",
+    "prepublishOnly": "yarn build"
   },
   "devDependencies": {
     "@types/ejs": "^3.0.2",

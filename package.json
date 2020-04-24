@@ -6,7 +6,9 @@
   "author": "EGOIST <0x142857@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "toc": "doctoc README.md"
+    "toc": "doctoc README.md",
+    "release:prepare": "shipjs prepare",
+    "release:trigger": "shipjs trigger"
   },
   "husky": {
     "hooks": {
@@ -14,18 +16,15 @@
     }
   },
   "lint-staged": {
-    "README.md": [
-      "yarn doctoc"
-    ]
+    "README.md": ["yarn doctoc"]
   },
-  "workspaces": [
-    "packages/*"
-  ],
+  "workspaces": ["packages/*"],
   "devDependencies": {
     "doctoc": "^1.4.0",
     "husky": "^4.2.5",
     "lerna": "^3.20.2",
     "lint-staged": "^10.1.7",
+    "shipjs": "0.18.2",
     "typescript": "^3.8.3"
   }
 }
