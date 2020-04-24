@@ -1,7 +1,9 @@
 {
-  "version": "0.0.0",
+  "version": "0.1.0",
   "name": "mordred-transformer-markdown",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
@@ -17,6 +19,6 @@
     "markdown-it": "^10.0.0"
   },
   "peerDependencies": {
-    "mordred": "0.0.0"
+    "mordred": "^0.1.0"
   }
 }
