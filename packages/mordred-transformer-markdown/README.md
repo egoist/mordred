@@ -31,7 +31,9 @@ module.exports = {
     // Typically after `mordred-source-filesystem`
     {
       resolve: 'mordred-transformer-markdown',
-      options: {}
+      options: {
+        // All markdown-it options are supported
+      }
     }
   ]
 }
