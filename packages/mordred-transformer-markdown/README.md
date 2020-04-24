@@ -2,9 +2,11 @@
 
 Parse markdown files using [markdown-it](https://github.com/markdown-it/markdown-it).
 
+## Table of Contents
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
 
 - [Install](#install)
 - [How to use](#how-to-use)
@@ -49,7 +51,7 @@ A simple query:
     node {
       html
       headings {
-        depth
+        level
         text
       }
       frontmatter {
