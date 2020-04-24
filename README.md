@@ -10,6 +10,7 @@
   * [Using Data](#using-data)
   * [Exploring Data with GraphiQL](#exploring-data-with-graphiql)
 - [Usage With Nuxt.js](#usage-with-nuxtjs)
+- [Plugin List](#plugin-list)
 - [License](#license)
 
 <!-- tocstop -->
@@ -41,7 +42,7 @@ module.exports = {
           },
         },
         {
-          resolve: 'mordred-source-markdown',
+          resolve: 'mordred-transformer-markdown',
         },
       ],
     })
@@ -140,6 +141,11 @@ export default app
 ## Usage With Nuxt.js
 
 We're waiting for Nuxt's full-static mode, it's already possible to use Mordred with Nuxt's `asyncData` though. We'll document this soon.
+
+## Plugin List
+
+- [mordred-source-filesystem](/packages/mordred-source-filesystem)
+- [mordred-transformer-markdown](/packages/mordred-source-markdown)
 
 ## License
 
