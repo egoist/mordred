@@ -1,7 +1,9 @@
 {
-  "version": "0.0.0",
+  "version": "0.1.0",
   "name": "mordred-transformer-markdown",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
