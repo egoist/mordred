@@ -12,6 +12,6 @@
     "prepublishOnly": "yarn build"
   },
   "peerDependencies": {
-    "mordred": "0.0.0"
+    "mordred": "^0.1.0"
   }
 }
