@@ -6,7 +6,7 @@ __Source data from anywhere, for Next.js, Nuxt.js, Eleventy and many more.__
 
 ## Features
 
-✅ Query any data (Markdown, API, database, CMS) with GraphQL<br>
+✅ Inspired by [Gatsby](https://gatsbyjs.org), you can query any data (Markdown, API, database, CMS) with GraphQL<br>
 ✅ Framework agnostic, works with any framework that has SSG support<br>
 ✅ Tons of plugins for popular headless CMS (not yet, we need your contribution!)
 
