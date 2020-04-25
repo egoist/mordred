@@ -84,7 +84,7 @@ By default markdown nodes are ordered by `createdAt` in `DESC`, but you can also
 
 ```graphql
 {
-  allMarkdown(orderBy: frontmatter_title, skip: 5, limit: 5) {
+  allMarkdown(orderBy: frontmatter__title, skip: 5, limit: 5) {
     nodes {
       slug
     }

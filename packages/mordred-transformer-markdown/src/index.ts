@@ -31,7 +31,7 @@ const plugin: PluginFactory = (ctx, options) => {
         createdAt
         updatedAt
         ${[...frontmatterKeys].map((key) => {
-          return `frontmatter_${key}`
+          return `frontmatter__${key}`
         })}
       }
 
@@ -86,8 +86,8 @@ const plugin: PluginFactory = (ctx, options) => {
             const order = args.order || 'DESC'
             const skip = args.skip || 0
             const getValue = (obj, path) => {
-              if (path.startsWith('frontmatter_')) {
-                return obj.frontmatter[path.replace('frontmatter_', '')]
+              if (path.startsWith('frontmatter__')) {
+                return obj.frontmatter[path.replace('frontmatter__', '')]
               }
               return obj[path]
             } 
