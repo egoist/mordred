@@ -1,4 +1,4 @@
-import { resolve } from 'path'
+import { resolve, join, relative } from 'path'
 import glob from 'fast-glob'
 import { fileToNode, FILE_NODE_TYPE, getFileNodeId } from './to-node'
 import { PluginFactory, Mordred } from 'mordred'
@@ -38,20 +38,7 @@ const plugin: PluginFactory = (
       `
     },
 
-    getResolvers() {
-      return `{
-        Query: {
-          allFile() {
-            const result = nodes.filter(
-              (node) => node.type === "${FILE_NODE_TYPE}"
-            )
-            return {
-              nodes: result,
-            }
-          }
-        }
-      }`
-    },
+    getResolvers: () => relative(ctx.outDir, join(__dirname, 'resolvers')),
 
     async createNodes() {
       const files = await glob(contentGlobs, {

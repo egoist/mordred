@@ -7,7 +7,7 @@ export type Plugin = {
 
   getSchema?: () => string
 
-  getResolvers?:  () => string
+  getResolvers?: () => string
 
   createNodes?: () => any[] | Promise<any[]>
 }

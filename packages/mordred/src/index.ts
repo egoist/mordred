@@ -22,6 +22,7 @@ export class Mordred {
   config: MordredConfig
   cwd: string
   plugins: Plugin[]
+  outDir: string
 
   gql = gql
   mime = mime
@@ -33,6 +34,8 @@ export class Mordred {
     this.cwd = cwd
     this.nodes = new Map()
 
+    this.outDir = join(this.cwd, 'mordred')
+
     this.plugins = (this.config.plugins || []).map(({ resolve, options }) => {
       const pluginDefaultExport = require(resolve).default || require(resolve)
       const plugin: Plugin = pluginDefaultExport(this, options)
@@ -41,7 +44,7 @@ export class Mordred {
   }
 
   get graphqlClientPath() {
-    return join(this.cwd, 'mordred/graphql.js')
+    return join(this.outDir, 'graphql.js')
   }
 
   async writeGraphQL() {
