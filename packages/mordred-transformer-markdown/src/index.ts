@@ -5,6 +5,7 @@ import { markdownPluginHeadings } from './markdown-plugin-headings'
 
 const plugin: PluginFactory = (ctx, options) => {
   const frontmatterKeys: Set<string> = new Set()
+  const gql = ctx.gql
 
   return {
     name: 'transformer-markdown',
@@ -25,14 +26,14 @@ const plugin: PluginFactory = (ctx, options) => {
           .join('\n')}
       }`
 
-      return `
+      return gql`
       ${MarkdownFrontMatter}
 
       enum MarkdownNodeOrderBy {
         createdAt
         updatedAt
         ${[...frontmatterKeys].map((key) => {
-          return `frontmatter__${key}`
+          return 'frontmatter__' + key
         })}
       }
 
@@ -51,7 +52,7 @@ const plugin: PluginFactory = (ctx, options) => {
         html: String!
         headings: [MarkdownNodeHeading!]!
         frontmatter: ${
-          frontmatterKeys.size === 0 ? 'JSON' : `MarkdownFrontMatter`
+          frontmatterKeys.size === 0 ? 'JSON' : 'MarkdownFrontMatter'
         }
       }
 
@@ -97,7 +98,7 @@ const plugin: PluginFactory = (ctx, options) => {
             langPrefix: options.langPrefix,
           })
           md.use(markdownPluginHeadings)
-          const env = {headings: []}
+          const env = { headings: [] }
           const html = md.render(content, env)
           return {
             ...node,

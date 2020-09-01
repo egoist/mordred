@@ -1,11 +1,11 @@
 import { resolve, join, relative } from 'path'
 import glob from 'fast-glob'
-import { fileToNode, FILE_NODE_TYPE, getFileNodeId } from './to-node'
-import { PluginFactory, Mordred } from 'mordred'
+import { fileToNode } from './to-node'
+import { PluginFactory } from 'mordred'
 
 const plugin: PluginFactory = (
   ctx,
-  { path = 'content', include = '**/*.md' }
+  { path = 'content', include = '**/*.md' },
 ) => {
   const gql = ctx.gql
   const contentDir = resolve(process.env.__MORDRED_CONTEXT!, path)
@@ -48,7 +48,7 @@ const plugin: PluginFactory = (
       const nodes = await Promise.all(
         files.map((filename) => {
           return fileToNode(filename, contentDir, ctx.mime.getType)
-        })
+        }),
       )
 
       return nodes
@@ -60,11 +60,10 @@ const plugin: PluginFactory = (
         watch(contentGlobs, {
           cwd: contentDir,
           ignoreInitial: true,
+        }).on('all', async () => {
+          await ctx.createNodes()
+          await ctx.writeAll()
         })
-          .on('all', async () => {
-            await ctx.createNodes()
-            await ctx.writeAll()
-          })
       }
     },
   }

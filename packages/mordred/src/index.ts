@@ -57,7 +57,7 @@ export class Mordred {
       await outputFile(
         join(this.cwd, 'mordred/graphql.d.ts'),
         graphqlDefinitionTemplate,
-        'utf8'
+        'utf8',
       )
     } catch (err) {
       console.error(err)
@@ -74,7 +74,12 @@ export class Mordred {
   }
 
   async writeAll() {
-    console.log(`Updating GraphQL client at ${relative(process.cwd(), this.graphqlClientPath)}..`)
+    console.log(
+      `Updating GraphQL client at ${relative(
+        process.cwd(),
+        this.graphqlClientPath,
+      )}..`,
+    )
     await Promise.all([this.writeNodes(), this.writeGraphQL()])
   }
 

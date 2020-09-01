@@ -10,16 +10,16 @@ export default ({ nodes }: { nodes: any[] }) => {
     Query: {
       markdownBySlug(_: any, args: any) {
         const node = nodes.find(
-          (node) => node.type === 'Markdown' && node.slug === args.slug
+          (node) => node.type === 'Markdown' && node.slug === args.slug,
         )
         return node
       },
-  
+
       allMarkdown(_: any, args: any) {
         const orderBy = args.orderBy || 'createdAt'
         const order = args.order || 'DESC'
         const skip = args.skip || 0
-  
+
         const markdownNodes = nodes
           .filter((node) => {
             return node.type === 'Markdown'
