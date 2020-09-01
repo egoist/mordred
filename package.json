@@ -16,14 +16,20 @@
     }
   },
   "lint-staged": {
-    "README.md": ["yarn doctoc"]
+    "README.md": [
+      "yarn doctoc"
+    ]
   },
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*"
+  ],
   "devDependencies": {
+    "@egoist/prettier-config": "^0.1.0",
     "doctoc": "^1.4.0",
     "husky": "^4.2.5",
     "lerna": "^3.20.2",
     "lint-staged": "^10.1.7",
+    "prettier": "^2.1.1",
     "shipjs": "0.18.2",
     "typescript": "^3.8.3"
   }
