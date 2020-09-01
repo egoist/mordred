@@ -1,4 +1,4 @@
-# [1.0.0](https://github.com/egoist/mordred-test/compare/v0.1.1...v1.0.0) (2020-09-01)
+# [0.2.0](https://github.com/egoist/mordred-test/compare/v0.1.1...v0.2.0) (2020-09-01)
 
 
 ### Features
