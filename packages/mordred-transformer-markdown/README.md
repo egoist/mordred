@@ -50,10 +50,6 @@ A simple query:
   allMarkdown {
     node {
       html
-      headings {
-        level
-        text
-      }
       frontmatter {
         # Assumes you're using title in your frontmatter.
         title
