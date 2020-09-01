@@ -1,43 +1,37 @@
 import Link from 'next/link'
-import { query } from '../mordred/graphql'
+import { client } from '../mordred/graphql'
 
 export const getStaticProps = async ({ params = {} }) => {
   const limit = 1
   const page = Number(params.page || 1)
   const skip = (page - 1) * limit
-  const { data, errors } = await query(
-    `
-    query ($skip: Int!, $limit: Int!){
-      allMarkdown(skip: $skip, limit: $limit) {
-        nodes {
-          id
-          html
-          createdAt
-          frontmatter {
-            title
-          }
-        }
-        pageInfo {
-          hasNextPage
-          hasPrevPage
-        }
-      }
-    }
-  `,
-    {
-      variables: {
+  const { allMarkdown } = await client.query({
+    allMarkdown: [
+      {
         skip,
         limit,
       },
-    }
-  )
-  if (errors) {
-    throw errors[0]
-  }
+      {
+        nodes: {
+          id: true,
+          html: true,
+          createdAt: true,
+          frontmatter: {
+            title: true,
+          },
+        },
+        pageInfo: {
+          hasNextPage: true,
+          hasPrevPage: true,
+        },
+      },
+    ],
+  })
+
   return {
     props: {
       page,
-      ...data,
+      allMarkdown,
     },
   }
 }
@@ -63,8 +57,7 @@ export default ({ allMarkdown, page }) => {
           <Link href={page === 2 ? `/` : `/page/${page - 1}`}>
             <a>Prev Page</a>
           </Link>
-        )}
-        {' '}
+        )}{' '}
         {allMarkdown.pageInfo.hasNextPage && (
           <Link href={`/page/${page + 1}`}>
             <a>Next Page</a>

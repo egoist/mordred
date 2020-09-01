@@ -4,7 +4,8 @@
   "files": [
     "dist",
     "/webpack.js",
-    "/templates"
+    "/templates",
+    "/next.js"
   ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -27,11 +28,12 @@
     "@types/webpack": "^4.41.12",
     "express": "^4.17.1",
     "express-graphql": "^0.9.0",
-    "next": "^9.3.5",
+    "next": "9.5.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   },
   "dependencies": {
+    "@graphql-tools/merge": "^6.2.0",
     "chokidar": "^3.3.1",
     "ejs": "^3.1.2",
     "fast-glob": "^3.2.2",
@@ -39,6 +41,7 @@
     "graphql": "^14.0.0",
     "graphql-tools": "^5.0.0",
     "graphql-type-json": "^0.3.1",
+    "graphql-zeus": "^2.7.5",
     "hash-sum": "^2.0.0",
     "joycon": "^2.2.5",
     "mime": "^2.4.4",

@@ -2,6 +2,9 @@ import { join, relative } from 'path'
 import { outputFile } from 'fs-extra'
 import serialize from 'serialize-javascript'
 import mime from 'mime'
+import { mergeTypeDefs } from '@graphql-tools/merge'
+import { print } from 'graphql'
+import { Parser, TreeToTS } from 'graphql-zeus'
 import { graphqlTemplate, graphqlDefinitionTemplate } from './templates'
 import { Plugin } from './plugin'
 import { gql } from './gql'
@@ -34,7 +37,7 @@ export class Mordred {
     this.cwd = cwd
     this.nodes = new Map()
 
-    this.outDir = join(this.cwd, 'mordred')
+    this.outDir = join(cwd, 'mordred')
 
     this.plugins = (this.config.plugins || []).map(({ resolve, options }) => {
       const pluginDefaultExport = require(resolve).default || require(resolve)
@@ -55,7 +58,7 @@ export class Mordred {
 
       await outputFile(this.graphqlClientPath, outContent, 'utf8')
       await outputFile(
-        join(this.cwd, 'mordred/graphql.d.ts'),
+        join(this.outDir, 'graphql.d.ts'),
         graphqlDefinitionTemplate,
         'utf8',
       )
@@ -66,11 +69,37 @@ export class Mordred {
   }
 
   async writeNodes() {
-    const outPath = join(this.cwd, 'mordred/nodes.json')
+    const outPath = join(this.outDir, 'nodes.json')
     const outContent = `${serialize([...this.nodes.values()], {
       isJSON: true,
     })}`
     await outputFile(outPath, outContent, 'utf8')
+  }
+
+  async writeZeus() {
+    const types: string[] = [
+      `
+    scalar JSON
+  
+    type Query {
+      hello: String
+    }
+  `,
+      ...this.plugins
+        .filter((plugin) => plugin.getSchema)
+        .map((plugin) => (plugin.getSchema ? plugin.getSchema() : '')),
+    ]
+    const typeDefs = mergeTypeDefs(types)
+    const tree = Parser.parse(print(typeDefs))
+    const jsDefinition = TreeToTS.javascript(tree)
+    await Promise.all([
+      outputFile(
+        join(this.outDir, 'zeus.d.ts'),
+        jsDefinition.definitions,
+        'utf8',
+      ),
+      outputFile(join(this.outDir, 'zeus.js'), jsDefinition.javascript, 'utf8'),
+    ])
   }
 
   async writeAll() {
@@ -80,7 +109,11 @@ export class Mordred {
         this.graphqlClientPath,
       )}..`,
     )
-    await Promise.all([this.writeNodes(), this.writeGraphQL()])
+    await Promise.all([
+      this.writeNodes(),
+      this.writeZeus(),
+      this.writeGraphQL(),
+    ])
   }
 
   getPluginSchema(name: string) {

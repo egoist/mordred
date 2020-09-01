@@ -1,12 +1,13 @@
-# 🤺 Mordred 
+# 🤺 Mordred
 
 [![npm version](https://flat.badgen.net/npm/v/mordred?scale=1.5)](https://npm.im/mordred) [![community](https://flat.badgen.net/badge/icon/discord?icon=discord&label=community&scale=1.5)](https://chat.egoist.sh)
 
-__Source data from anywhere, for Next.js, Nuxt.js, Eleventy and many more.__
+**Source data from anywhere, for Next.js, Nuxt.js, Eleventy and many more.**
 
 ## Features
 
 ✅ Inspired by [Gatsby](https://gatsbyjs.org), you can query any data (Markdown, API, database, CMS) with GraphQL<br>
+✅ Automatically generate JavaScript client for better dev experience
 ✅ Framework agnostic, works with any framework that has SSG support<br>
 ✅ Tons of plugins for popular headless CMS (not yet, we need your contribution!)
 
@@ -20,8 +21,8 @@ __Source data from anywhere, for Next.js, Nuxt.js, Eleventy and many more.__
 - [Usage with Next.js](#usage-with-nextjs)
   - [Configuration](#configuration)
   - [Using Data](#using-data)
+  - [Execute Raw Query](#execute-raw-query)
   - [Exploring Data with GraphiQL](#exploring-data-with-graphiql)
-- [Usage With Nuxt.js](#usage-with-nuxtjs)
 - [Plugin List](#plugin-list)
 - [License](#license)
 
@@ -40,15 +41,11 @@ yarn add mordred
 In `next.config.js`:
 
 ```js
-module.exports = {
-  webpack(config) {
-    const { MordredWebpackPlugin } = require('mordred/webpack')
+const { withMordred } = require('mordred/next')
 
-    const mordredPlugin = new MordredWebpackPlugin()
-    config.plugins.push(mordredPlugin)
-    return config
-  },
-}
+module.exports = withMordred({
+  // Extra Next.js config..
+})
 ```
 
 Then create a `mordred.config.js` in the same directory and use some plugins:
@@ -56,6 +53,7 @@ Then create a `mordred.config.js` in the same directory and use some plugins:
 ```js
 module.exports = {
   plugins: [
+    // Load markdown files from file system
     {
       resolve: 'mordred-source-filesystem',
       options: {
@@ -63,6 +61,7 @@ module.exports = {
         path: __dirname + '/content',
       },
     },
+    // Transform files to markdown nodes
     {
       resolve: 'mordred-transformer-markdown',
     },
@@ -87,40 +86,38 @@ date: 2020-04-24
 ---
 
 This is my **first** post!
-````
+```
 
 When you run `next` or `next build`, Mordred will generate a GraphQL client at `mordred/graphql.js`, then you can use the generated client to query data.
 
 Now in any page, query data in `getStaticProps`:
 
 ```js
-import { query, gql } from '../mordred/graphql'
+import { client } from '../mordred/graphql'
 
 export const getStaticProps = async () => {
-  const { data, errors } = await query(gql`
+  const { allMarkdown } = await client.query([
     {
-      allMarkdown {
-        nodes {
-          id
-          slug
-          createdAt
-          updatedAt
-          html
+      limit: 20
+    },
+    {
+      allMarkdown: {
+        nodes: {
+          id: true,
+          slug: true,
+          createdAt: true,
+          updatedAt: true,
+          html: true,
           frontmatter {
-            # ... or any frontmatter
-            # like:
-            title
+            title: true
           }
         }
       }
     }
-  `)
-  if (errors) {
-    throw errors[0]
-  }
+  ])
   return {
     props: {
-      ...data,
+      allMarkdown
     },
   }
 }
@@ -140,6 +137,29 @@ export default ({ allMarkdown }) => {
 }
 ```
 
+### Execute Raw Query
+
+If you prefer GraphQL SDL over the JavaScript client, you can execute raw query too:
+
+```js
+import { executeQuery, gql } from './path/to/mordred/graphql'
+
+const { data, errors } = await executeQuery(
+  gql`
+    query($limit: Int!) {
+      allMarkdown(limit: $limit) {
+        id
+      }
+    }
+  `,
+  {
+    limit: 20,
+  },
+)
+```
+
+Note that we use the `gql` tag here only for syntax highlighting in supported editors like VS Code, it's completely optional.
+
 ### Exploring Data with GraphiQL
 
 You can create an API at `/api/graphql` to explore data via GraphiQL:
@@ -155,15 +175,11 @@ app.use(
   graphqlHTTP({
     schema,
     graphiql: true,
-  })
+  }),
 )
 
 export default app
 ```
-
-## Usage With Nuxt.js
-
-We're waiting for Nuxt's full-static mode, it's already possible to use Mordred with Nuxt's `asyncData` though. We'll document this soon.
 
 ## Plugin List
 

@@ -1,4 +1,7 @@
 import { ExecutionResult, GraphQLSchema } from 'graphql'
+import { Thunder } from './zeus'
+
+export const client: ReturnType<typeof Thunder>
 
 export declare type QueryOptions = {
   variables?: {
@@ -8,9 +11,9 @@ export declare type QueryOptions = {
 
 export declare const schema: GraphQLSchema
 
-export declare const query: (
+export declare const executeQuery: (
   query: string,
-  options?: QueryOptions
+  options?: QueryOptions,
 ) => ExecutionResult
 
 export declare function gql(

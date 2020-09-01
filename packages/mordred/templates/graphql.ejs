@@ -6,6 +6,7 @@
 import { graphql } from 'graphql'
 import { makeExecutableSchema } from 'graphql-tools'
 import { GraphQLJSON } from 'graphql-type-json'
+import { Thunder } from './zeus'
 import nodes from './nodes'
 
 export const typeDefs = [`
@@ -43,7 +44,7 @@ export const schema = makeExecutableSchema({
   resolvers
 })
 
-export const query = (query, { variables } = {}) => {
+export const executeQuery = (query, { variables } = {}) => {
   return graphql(schema, query, {}, {}, variables)
 }
 
@@ -55,3 +56,11 @@ export function gql(literals, ...variables) {
     })
     .join('')
 }
+
+export const client = Thunder(async (query, variables) => {
+  const { errors, data } = await executeQuery(query, { variables })
+  if (errors && errors.length > 0) {
+    throw errors[0]
+  }
+  return data
+})

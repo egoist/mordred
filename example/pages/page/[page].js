@@ -1,21 +1,21 @@
-import { query, gql } from '../../mordred/graphql'
+import { client } from '../../mordred/graphql'
 
 export { getStaticProps, default } from '../'
 
 export const getStaticPaths = async () => {
-  const { data, errors } = await query(gql`
-    query {
-      allMarkdown(limit: 1) {
-        pageInfo {
-          pageCount
-        }
-      }
-    }
-  `)
-  if (errors) {
-    throw errors[0]
-  }
-  const paths = new Array(data.allMarkdown.pageInfo.pageCount)
+  const { allMarkdown } = await client.query({
+    allMarkdown: [
+      {
+        limit: 1,
+      },
+      {
+        pageInfo: {
+          pageCount: true,
+        },
+      },
+    ],
+  })
+  const paths = new Array(allMarkdown.pageInfo.pageCount)
     .fill(null)
     .map((_, i) => {
       return {

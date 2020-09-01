@@ -8,7 +8,7 @@ const plugin: PluginFactory = (
   { path = 'content', include = '**/*.md' },
 ) => {
   const gql = ctx.gql
-  const contentDir = resolve(process.env.__MORDRED_CONTEXT!, path)
+  const contentDir = resolve(ctx.cwd, path)
   const contentGlobs = [...(Array.isArray(include) ? include : [include])]
 
   return {
