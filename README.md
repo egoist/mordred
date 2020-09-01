@@ -22,6 +22,7 @@
   - [Configuration](#configuration)
   - [Using Data](#using-data)
   - [Execute Raw Query](#execute-raw-query)
+  - [Module Alias](#module-alias)
   - [Exploring Data with GraphiQL](#exploring-data-with-graphiql)
 - [Plugin List](#plugin-list)
 - [License](#license)
@@ -89,6 +90,12 @@ This is my **first** post!
 ```
 
 When you run `next` or `next build`, Mordred will generate a GraphQL client at `mordred/graphql.js`, then you can use the generated client to query data.
+
+**You should add this folder to `.gitignore`:**
+
+```
+mordred/
+```
 
 Now in any page, query data in `getStaticProps`:
 
@@ -159,6 +166,31 @@ const { data, errors } = await executeQuery(
 ```
 
 Note that we use the `gql` tag here only for syntax highlighting in supported editors like VS Code, it's completely optional.
+
+### Module Alias
+
+When your project has a deep nested folder structure, you might run into _import hell_:
+
+```js
+import { client } from '../../mordred/graphql'
+```
+
+To simplify the import path, you can use `paths` option in `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "mordred-graphql": ["./mordred/graphql"]
+    }
+  }
+}
+```
+
+Now you can import form `mordred-graphql` instead.
+
+Note that Next.js supports `paths` by default, but if you're using other tools which don't support this, you might find [alias-hq](https://github.com/davestewart/alias-hq) helpful.
 
 ### Exploring Data with GraphiQL
 
