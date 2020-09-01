@@ -1,3 +1,12 @@
+# [1.0.0](https://github.com/egoist/mordred-test/compare/v0.1.1...v1.0.0) (2020-09-01)
+
+
+### Features
+
+* generate js client, closes [#9](https://github.com/egoist/mordred-test/issues/9) ([f55f294](https://github.com/egoist/mordred-test/commit/f55f294cde4637bd32dc17291ce96f9aea925201))
+
+
+
 # [0.1.1](https://github.com/egoist/mordred/compare/v0.1.0...v0.1.1) (2020-04-25)
 
 
