@@ -103,12 +103,12 @@ Now in any page, query data in `getStaticProps`:
 import { client } from '../mordred/graphql'
 
 export const getStaticProps = async () => {
-  const { allMarkdown } = await client.query([
-    {
-      limit: 20
-    },
-    {
-      allMarkdown: {
+  const { allMarkdown } = await client.query({
+    allMarkdown: [
+      {
+        limit: 20
+      },
+      {
         nodes: {
           id: true,
           slug: true,
@@ -120,8 +120,8 @@ export const getStaticProps = async () => {
           }
         }
       }
-    }
-  ])
+    ]
+  })
   return {
     props: {
       allMarkdown
@@ -143,6 +143,8 @@ export default ({ allMarkdown }) => {
   )
 }
 ```
+
+The `client.query` syntax is very similar to GraphQL SDL except that it also provides type hints as you write, we use [graphql-zeus](https://github.com/graphql-editor/graphql-zeus) to generate the client code.
 
 ### Execute Raw Query
 
