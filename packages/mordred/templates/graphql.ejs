@@ -9,13 +9,7 @@ import { GraphQLJSON } from 'graphql-type-json'
 import { Thunder } from './zeus'
 import nodes from './nodes'
 
-export const typeDefs = [`
-  scalar JSON
-
-  type Query {
-    hello: String
-  }
-`]
+export const typeDefs = `<%= typeDefs %>`
 
 export const resolvers = [{
   JSON: GraphQLJSON
@@ -26,10 +20,6 @@ const resolverArgs = {
 }
 
 <% plugins.forEach(function (plugin, index) { %>
-
-<% if (plugin.getSchema) { %>
-  typeDefs.push(`<%- plugin.getSchema() %>`)
-<% } %>
 
 <% if (plugin.getResolvers) { %>
   import getResolvers_<%= index %> from '<%= plugin.getResolvers().replace(/\\/g, '') %>'

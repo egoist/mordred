@@ -53,6 +53,7 @@ export class Mordred {
   async writeGraphQL() {
     try {
       const outContent = graphqlTemplate({
+        typeDefs: this.typeDefs,
         plugins: this.plugins,
       })
 
@@ -76,21 +77,31 @@ export class Mordred {
     await outputFile(outPath, outContent, 'utf8')
   }
 
+  get typeDefs() {
+    const types: string[] = this.plugins
+      .filter((plugin) => plugin.getSchema)
+      .reduce(
+        (result, plugin) => {
+          result.push(plugin.getSchema ? plugin.getSchema(result) : '')
+          return result
+        },
+        [
+          `
+      scalar JSON
+    
+      type Query {
+        hello: String
+      }
+    `,
+        ],
+      )
+
+    const typeDefs = print(mergeTypeDefs(types))
+    return typeDefs
+  }
+
   async writeZeus() {
-    const types: string[] = [
-      `
-    scalar JSON
-  
-    type Query {
-      hello: String
-    }
-  `,
-      ...this.plugins
-        .filter((plugin) => plugin.getSchema)
-        .map((plugin) => (plugin.getSchema ? plugin.getSchema() : '')),
-    ]
-    const typeDefs = mergeTypeDefs(types)
-    const tree = Parser.parse(print(typeDefs))
+    const tree = Parser.parse(this.typeDefs)
     const jsDefinition = TreeToTS.javascript(tree)
     await Promise.all([
       outputFile(
@@ -114,12 +125,6 @@ export class Mordred {
       this.writeZeus(),
       this.writeGraphQL(),
     ])
-  }
-
-  getPluginSchema(name: string) {
-    const plugin = this.plugins.find((plugin) => plugin.name === name)
-
-    return plugin && plugin.getSchema ? plugin.getSchema() : ''
   }
 
   async init() {

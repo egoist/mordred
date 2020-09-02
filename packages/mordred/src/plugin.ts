@@ -5,7 +5,7 @@ export type Plugin = {
 
   onInit?: () => void | Promise<void>
 
-  getSchema?: () => string
+  getSchema?: (typeDefs: string[]) => string
 
   getResolvers?: () => string
 
@@ -14,5 +14,5 @@ export type Plugin = {
 
 export type PluginFactory<TOptions = any> = (
   context: Mordred,
-  options: TOptions
+  options: TOptions,
 ) => Plugin

@@ -3,17 +3,30 @@ import { PluginFactory } from 'mordred'
 import grayMatter from 'gray-matter'
 import { markdownPluginHeadings } from './markdown-plugin-headings'
 
-const plugin: PluginFactory = (ctx, options) => {
+const plugin: PluginFactory<{
+  inputNodeTypes?: string[]
+  [k: string]: any
+}> = (ctx, options) => {
   const frontmatterKeys: Set<string> = new Set()
+  const inputNodeTypes: Set<string> = new Set()
   const gql = ctx.gql
 
   return {
     name: 'transformer-markdown',
 
-    getSchema() {
-      const fileSchema = ctx.getPluginSchema('source-filesystem')
-      const matched = /type\s+FileNode\s+{([^}]+)}/.exec(fileSchema)
-      const FileNode = matched && matched[1]
+    getSchema(typeDefs) {
+      const types = typeDefs.join('\n')
+      const extraNodeFields: Array<string | null> = []
+
+      for (const type of inputNodeTypes) {
+        const re = new RegExp(`type\\s+${type}\\s+{([^}]+)}`)
+        const m = re.exec(types)
+        if (m) {
+          extraNodeFields.push(m[1])
+        } else {
+          extraNodeFields.push(null)
+        }
+      }
 
       const MarkdownFrontMatter =
         frontmatterKeys.size === 0
@@ -48,13 +61,22 @@ const plugin: PluginFactory = (ctx, options) => {
       }
 
       type MarkdownNode {
-        ${FileNode}
         html: String!
         headings: [MarkdownNodeHeading!]!
         frontmatter: ${
           frontmatterKeys.size === 0 ? 'JSON' : 'MarkdownFrontMatter'
         }
       }
+
+      ${extraNodeFields
+        .map((fields) => {
+          return `
+          extend type MarkdownNode {
+            ${fields}
+          }`
+        })
+        .join('\n')}
+
 
       type MarkdownPageInfo {
         hasPrevPage: Boolean!
@@ -78,6 +100,9 @@ const plugin: PluginFactory = (ctx, options) => {
     getResolvers: () => relative(ctx.outDir, join(__dirname, 'resolvers')),
 
     createNodes() {
+      frontmatterKeys.clear()
+      inputNodeTypes.clear()
+
       const nodes = [...ctx.nodes.values()]
         .filter((node) => {
           return node.mime === 'text/markdown'
@@ -87,6 +112,7 @@ const plugin: PluginFactory = (ctx, options) => {
           for (const key of Object.keys(data)) {
             frontmatterKeys.add(key)
           }
+          inputNodeTypes.add(`${node.type}Node`)
           const Markdown = require('markdown-it')
           const md = new Markdown({
             html: options.html !== false,

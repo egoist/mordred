@@ -1,0 +1,20 @@
+{
+  "version": "0.2.0",
+  "name": "mordred-source-github-issues",
+  "files": [
+    "dist"
+  ],
+  "main": "dist/index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "prepublishOnly": "yarn build"
+  },
+  "dependencies": {
+    "axios": "0.20.0"
+  },
+  "peerDependencies": {
+    "mordred": "^0.1.0"
+  }
+}

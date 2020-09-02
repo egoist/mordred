@@ -17,15 +17,15 @@ const plugin: PluginFactory = (
     getSchema() {
       return gql`
         type FileNode {
-          id: String!
+          id: ID!
           type: String!
           mime: String
           createdAt: String!
           updatedAt: String!
           content: String!
-          relativePath: String!
-          absolutePath: String!
-          slug: String!
+          relativePath: String
+          absolutePath: String
+          slug: String
         }
 
         type FileConnection {
