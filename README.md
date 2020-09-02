@@ -7,7 +7,7 @@
 ## Features
 
 ✅ Inspired by [Gatsby](https://gatsbyjs.org), you can query any data (Markdown, API, database, CMS) with GraphQL<br>
-✅ Automatically generate JavaScript client for better dev experience
+✅ Automatically generate JavaScript client for better dev experience<br>
 ✅ Framework agnostic, works with any framework that has SSG support<br>
 ✅ Tons of plugins for popular headless CMS (not yet, we need your contribution!)
 
