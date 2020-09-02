@@ -1,3 +1,12 @@
+# [1.0.0](https://github.com/egoist/mordred-test/compare/v0.2.0...v1.0.0) (2020-09-02)
+
+
+### Features
+
+* add mordred-source-github-issues ([959132d](https://github.com/egoist/mordred-test/commit/959132d3b4d5395c43f5a64ce67ddd2f131923f0))
+
+
+
 # [0.2.0](https://github.com/egoist/mordred-test/compare/v0.1.1...v0.2.0) (2020-09-01)
 
 
